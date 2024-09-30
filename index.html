@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Equivalent Price per kWh Calculator</title>
+  <!-- Bulma CSS Framework -->
+  <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .hero-body {
+      padding-bottom: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    #result {
+      font-size: 1.5rem;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <p class="title">Equivalent Price per kWh Calculator</p>
+      <p class="subtitle">Enter pricing details below:</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <form id="calculator-form" class="box">
+      <div class="field">
+        <label class="label" for="pricePerKwh">Price per kWh (EUR)</label>
+        <div class="control">
+          <input id="pricePerKwh" class="input" type="number" placeholder="e.g. 0.23" step="0.01" min="0" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="pricePerMinute">Price per minute (EUR)</label>
+        <div class="control">
+          <input id="pricePerMinute" class="input" type="number" placeholder="e.g. 0.04" step="0.01" min="0" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="plugPower">Charging Power (kW)</label>
+        <div class="control">
+          <input id="plugPower" class="input" type="number" placeholder="e.g. 7" step="0.1" min="0" required>
+        </div>
+      </div>
+
+      <div class="control">
+        <button type="submit" class="button is-primary is-fullwidth">Calculate</button>
+      </div>
+    </form>
+
+    <div id="result" class="notification is-info" style="display: none;">
+      Equivalent Price per kWh: <span id="equivalentPrice"></span> EUR
+    </div>
+  </div>
+
+  <script>
+    // Load previously saved values from local storage
+    document.addEventListener('DOMContentLoaded', function () {
+      if (localStorage.getItem('pricePerKwh')) {
+        document.getElementById('pricePerKwh').value = localStorage.getItem('pricePerKwh');
+      }
+      if (localStorage.getItem('pricePerMinute')) {
+        document.getElementById('pricePerMinute').value = localStorage.getItem('pricePerMinute');
+      }
+      if (localStorage.getItem('plugPower')) {
+        document.getElementById('plugPower').value = localStorage.getItem('plugPower');
+      }
+    });
+
+    document.getElementById('calculator-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Get the input values
+      const pricePerKwh = parseFloat(document.getElementById('pricePerKwh').value);
+      const pricePerMinute = parseFloat(document.getElementById('pricePerMinute').value);
+      const plugPower = parseFloat(document.getElementById('plugPower').value);
+
+      if (isNaN(pricePerKwh) || isNaN(pricePerMinute) || isNaN(plugPower) || plugPower <= 0) {
+        alert('Please provide valid input values.');
+        return;
+      }
+
+      // Save values to local storage
+      localStorage.setItem('pricePerKwh', pricePerKwh);
+      localStorage.setItem('pricePerMinute', pricePerMinute);
+      localStorage.setItem('plugPower', plugPower);
+
+      // Calculate the time in minutes to deliver 1 kWh
+      const timeToDeliver1Kwh = 60 / plugPower;
+
+      // Calculate the equivalent price per kWh
+      const equivalentPrice = pricePerKwh + (pricePerMinute * timeToDeliver1Kwh);
+
+      // Display the result
+      document.getElementById('equivalentPrice').textContent = equivalentPrice.toFixed(2);
+      document.getElementById('result').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
